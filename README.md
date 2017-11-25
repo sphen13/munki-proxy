@@ -27,6 +27,7 @@ docker run -d --name munki-proxy \
 	-e UPSTREAM_SERVER=https://munkiserver.example.com \
 	-v /var/docker/munki-proxy:/cache
 	-p 8080:80 \
+	--restart always \
 	sphen/munki-proxy
 ```
 
