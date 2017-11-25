@@ -25,7 +25,7 @@ Example usage:
 docker run -d --name munki-proxy \
 	-e MUNKI_ROOT=/munki \
 	-e UPSTREAM_SERVER=https://munkiserver.example.com \
-	-v /var/docker/munki-proxy:/cache
+	-v /var/docker/munki-proxy:/cache \
 	-p 8080:80 \
 	--restart always \
 	sphen/munki-proxy
