@@ -1,0 +1,141 @@
+#!/bin/bash
+
+nginxConfig="/etc/nginx/nginx.conf"
+
+# build nginx config
+cat <<EOF > ${nginxConfig}
+worker_processes 6;
+
+events {
+	worker_connections 768;
+}
+
+http {
+	# optimize for large files
+	sendfile off;
+	directio 512;
+	aio on;
+	tcp_nopush on;
+	tcp_nodelay on;
+
+	keepalive_timeout 180;
+
+	# open file caching
+	open_file_cache				max=2000 inactive=5m;
+	open_file_cache_valid		5m;
+	open_file_cache_min_uses	1;
+	open_file_cache_errors		on;
+
+	# MIME type handling
+	types_hash_max_size 2048;
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+	types {
+		application/x-plist plist;
+	}
+
+	# Don't include the nginx version number, etc
+	server_tokens off;
+
+	# Gzip Settings
+	gzip on;
+
+	# caching
+	proxy_cache_path		/cache levels=2:2 max_size=400g keys_zone=munkicache:15m inactive=30d;
+	proxy_temp_path			/proxy_tmp;
+	proxy_cache_use_stale	error timeout invalid_header updating http_500 http_502 http_503 http_504;
+
+	proxy_cache_valid		200 302 404   2h;
+	proxy_cache_revalidate	on;
+	proxy_cache_lock		on;
+
+	server {
+		listen 80;
+EOF
+
+# server_name if provided
+if [[ ${SERVER_NAME} ]]; then
+	echo "	server_name  [not provided];" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
+
+		proxy_cache munkicache;
+
+		location = / {
+			return 204;
+		}
+EOF
+
+# gruntwork staging server detection
+if [[ ${GRUNTWORK} ]]; then
+	echo "managed_installs" > /usr/share/nginx/html/gruntwork-only
+	cat <<EOF >> ${nginxConfig}
+
+		location ${MUNKI_ROOT}/manifests/gruntwork-only {
+			alias /usr/share/nginx/html/gruntwork-only;
+		}
+EOF
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
+
+		location / {
+			proxy_pass			${UPSTREAM_SERVER}/;
+			proxy_set_header	Host \$host;
+			proxy_set_header	X-Real-IP \$remote_addr;
+			proxy_set_header	X-Forwarded-For \$proxy_add_x_forwarded_for;
+			proxy_set_header	X-Forwarded-Host \$server_name;
+EOF
+
+if [[ ${GRUNTWORK} ]]; then
+	echo "			proxy_set_header	Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
+		}
+
+		location ${MUNKI_ROOT}/catalogs/ {
+			proxy_pass			${UPSTREAM_SERVER}${MUNKI_ROOT}/catalogs/;
+			proxy_set_header	Host \$host;
+			proxy_set_header	X-Real-IP \$remote_addr;
+			proxy_set_header	X-Forwarded-For \$proxy_add_x_forwarded_for;
+			proxy_set_header	X-Forwarded-Host \$server_name;
+			proxy_no_cache		1;
+			proxy_cache_bypass	1;
+EOF
+
+if [[ ${GRUNTWORK} ]]; then
+	echo "			proxy_set_header	Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
+		}
+
+		location ${MUNKI_ROOT}/manifests/ {
+			proxy_pass			${UPSTREAM_SERVER}${MUNKI_ROOT}/manifests/;
+			proxy_set_header	Host \$host;
+			proxy_set_header	X-Real-IP \$remote_addr;
+			proxy_set_header	X-Forwarded-For \$proxy_add_x_forwarded_for;
+			proxy_set_header	X-Forwarded-Host \$server_name;
+			proxy_no_cache		1;
+			proxy_cache_bypass	1;
+EOF
+
+if [[ ${GRUNTWORK} ]]; then
+	echo "			proxy_set_header	Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
+		}
+	}
+}
+EOF
+
+# run nginx
+nginx -g 'daemon off;'
