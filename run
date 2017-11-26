@@ -50,12 +50,12 @@ http {
 	proxy_cache_lock		on;
 
 	server {
-		listen 80;
+		listen ${PORT};
 EOF
 
 # server_name if provided
 if [[ ${SERVER_NAME} ]]; then
-	echo "	server_name  [not provided];" >> ${nginxConfig}
+	echo "	server_name  ${SERVER_NAME};" >> ${nginxConfig}
 fi
 
 # continue
@@ -137,5 +137,29 @@ cat <<EOF >> ${nginxConfig}
 }
 EOF
 
+# configure avahi
+cat <<EOF > /etc/avahi/services/munki.service
+<?xml version="1.0" standalone='no'?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+  <name replace-wildcards="yes">proxy</name>
+  <service>
+    <type>_munki._tcp</type>
+    <port>${PORT}</port>
+    <txt-record>protocol=http</txt-record>
+    <txt-record>path=${MUNKI_ROOT}</txt-record>
+  </service>
+</service-group>
+EOF
+
+sed -i -e "s/^#host-name=.*/host-name=${AVAHI_HOST}/" /etc/avahi/avahi-daemon.conf
+sed -i -e "s/^#domain-name=.*/domain-name=${AVAHI_DOMAIN}/" /etc/avahi/avahi-daemon.conf
+
+# start avahi
+avahi-daemon --no-drop-root &
+
 # run nginx
 nginx -g 'daemon off;'
+
+# if we get this far nginx failed - lets output the config
+cat /etc/nginx/nginx.conf
