@@ -3,7 +3,6 @@ FROM nginx:stable
 ENV MUNKI_ROOT ""
 ENV UPSTREAM_SERVER ""
 ENV PORT 8080
-ENV AVAHI_HOST munki-proxy
 ENV AVAHI_DOMAIN local
 
 RUN apt-get update && \

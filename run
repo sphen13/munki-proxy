@@ -137,8 +137,10 @@ cat <<EOF >> ${nginxConfig}
 }
 EOF
 
-# configure avahi
-cat <<EOF > /etc/avahi/services/munki.service
+# enable avahi if the user wants it
+if [[ ${AVAHI_HOST} ]]; then
+	# configure avahi
+	cat <<EOF > /etc/avahi/services/munki.service
 <?xml version="1.0" standalone='no'?>
 <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
 <service-group>
@@ -152,11 +154,12 @@ cat <<EOF > /etc/avahi/services/munki.service
 </service-group>
 EOF
 
-sed -i -e "s/^#host-name=.*/host-name=${AVAHI_HOST}/" /etc/avahi/avahi-daemon.conf
-sed -i -e "s/^#domain-name=.*/domain-name=${AVAHI_DOMAIN}/" /etc/avahi/avahi-daemon.conf
+	sed -i -e "s/^#host-name=.*/host-name=${AVAHI_HOST}/" /etc/avahi/avahi-daemon.conf
+	sed -i -e "s/^#domain-name=.*/domain-name=${AVAHI_DOMAIN}/" /etc/avahi/avahi-daemon.conf
 
-# start avahi
-avahi-daemon --no-drop-root &
+	# start avahi
+	avahi-daemon --no-drop-root &
+fi
 
 # run nginx
 nginx -g 'daemon off;'
