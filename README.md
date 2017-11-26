@@ -42,7 +42,7 @@ Example usage with mDNS:
 docker run -d --name munki-proxy \
 	-e MUNKI_ROOT=/munki \
 	-e UPSTREAM_SERVER=https://munkiserver.example.com \
-	-e AVAHI_HOST=munki-proxy
+	-e AVAHI_HOST=munki-proxy \
 	-v /var/docker/munki-proxy:/cache \
 	--net=host \
 	--restart always \
