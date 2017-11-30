@@ -45,7 +45,7 @@ http {
   proxy_cache_path        /cache/icons keys_zone=MUNKI_ICONS:5m levels=1:2 inactive=14d;
   proxy_cache_path        /cache/apple keys_zone=APPLE_SUS:5m levels=1:2 inactive=10m;
   proxy_cache_path        /cache/other keys_zone=MUNKI_DEFAULT:5m levels=1:2 inactive=10m;
-  use_temp_path           off;
+  proxy_temp_path         /tmp_cache;
   proxy_cache_use_stale   error timeout invalid_header updating http_500 http_502 http_503 http_504;
 
   proxy_cache_valid       200 302 404   10m;
