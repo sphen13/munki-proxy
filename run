@@ -98,7 +98,7 @@ cat <<EOF >> ${nginxConfig}
     location ${MUNKI_ROOT}/icons/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/icons/;
       proxy_cache         MUNKI_ICONS;
-      proxy_cache_valid   200 302 404   14d;
+      proxy_cache_valid   200 302   14d;
     }
 
     location ${MUNKI_ROOT}/manifests/ {
@@ -108,7 +108,7 @@ cat <<EOF >> ${nginxConfig}
     location ${MUNKI_ROOT}/pkgs/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/pkgs/;
       proxy_cache         MUNKI_PKGS;
-      proxy_cache_valid   200 302 404   30d;
+      proxy_cache_valid   200 302   30d;
     }
 
     # Apple SUS
@@ -119,7 +119,7 @@ cat <<EOF >> ${nginxConfig}
     location /content/downloads/ {
       proxy_pass          ${UPSTREAM_SERVER}/content/downloads/;
       proxy_cache         APPLE_SUS;
-      proxy_cache_valid   200 302 404   14d;
+      proxy_cache_valid   200 302   14d;
     }
   }
 }
