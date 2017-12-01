@@ -115,6 +115,12 @@ cat <<EOF >> ${nginxConfig}
       proxy_cache_valid   200 302   ${EXPIRE_ICONS};
     }
 
+    location ${MUNKI_ROOT}/client_resources/ {
+      proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/client_resources/;
+      proxy_cache         MUNKI_ICONS;
+      proxy_cache_valid   200 302   ${EXPIRE_ICONS};
+    }
+
     location ${MUNKI_ROOT}/manifests/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/manifests/;
     }
