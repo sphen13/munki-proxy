@@ -131,11 +131,35 @@ cat <<EOF >> ${nginxConfig}
       proxy_cache_valid   200 302   ${EXPIRE_PKGS};
     }
 
-    location /content/catalogs/ {
+    location ${SUS_ROOT}/ {
+      if ( \$http_user_agent ~ "Darwin/11" ){
+        rewrite ^${SUS_ROOT}/index(.*)\.sucatalog$ ${SUS_ROOT}/content/catalogs/others/index-lion-snowleopard-leopard.merged-1$1.sucatalog last;
+      }
+      if ( \$http_user_agent ~ "Darwin/12" ){
+        rewrite ^${SUS_ROOT}/index(.*)\.sucatalog$ ${SUS_ROOT}/content/catalogs/others/index-mountainlion-lion-snowleopard-leopard.merged-1$1.sucatalog last;
+      }
+      if ( \$http_user_agent ~ "Darwin/13" ){
+        rewrite ^${SUS_ROOT}/index(.*)\.sucatalog$ ${SUS_ROOT}/content/catalogs/others/index-10.9-mountainlion-lion-snowleopard-leopard.merged-1$1.sucatalog last;
+      }
+      if ( \$http_user_agent ~ "Darwin/14" ){
+        rewrite ^${SUS_ROOT}/index(.*)\.sucatalog$ ${SUS_ROOT}/content/catalogs/others/index-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1$1.sucatalog last;
+      }
+      if ( \$http_user_agent ~ "Darwin/15" ){
+        rewrite ^${SUS_ROOT}/index(.*)\.sucatalog$ ${SUS_ROOT}/content/catalogs/others/index-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1$1.sucatalog last;
+      }
+      if ( \$http_user_agent ~ "Darwin/16" ){
+        rewrite ^${SUS_ROOT}/index(.*)\.sucatalog$ ${SUS_ROOT}/content/catalogs/others/index-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1$1.sucatalog last;
+      }
+      if ( \$http_user_agent ~ "Darwin/17" ){
+        rewrite ^${SUS_ROOT}/index(.*)\.sucatalog$ ${SUS_ROOT}/content/catalogs/others/index-10.13-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1$1.sucatalog last;
+      }
+    }
+
+    location ${SUS_ROOT}/content/catalogs/ {
       proxy_pass          ${UPSTREAM_SERVER}${SUS_ROOT}/content/catalogs/;
     }
 
-    location /content/downloads/ {
+    location ${SUS_ROOT}/content/downloads/ {
       proxy_pass          ${UPSTREAM_SERVER}${SUS_ROOT}/content/downloads/;
       proxy_cache         APPLE_SUS;
       proxy_cache_valid   200 302   ${EXPIRE_SUS};
