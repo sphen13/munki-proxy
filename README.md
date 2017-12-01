@@ -2,24 +2,24 @@
 
 Simple docker container to act as local caching proxy for a munki repo.
 
-If you define the `AVAHI_HOST` environment variable the container will advertise with Bonjour/mDNS. It will be listed as a `_munki._tcp.` service.  This must use the host networking adapter to work properly `--net=host`.
+If you define the `AVAHI_HOST` environment variable the container will advertise with Bonjour/mDNS. It will be listed as a `_munki._tcp.` service.  This must use the host networking adapter to work properly `--net=host`.  This could potentially be used with this [munki proxy-check script](https://github.com/sphen13/munki-scripts/tree/master/munki%20proxy-check).
 
 ## Environment Variables
 
 Variable | Example | Description
 --- | --- | ---
-MUNKI_ROOT | `/munki` | Path from web root to the repo. Include first slash. Do not end in a slash.
-SUS_ROOT | `/reposado` | Path from web root to Apple SUS files. Include first slash. Do not end in a slash.
-**UPSTREAM_SERVER** | `https://munkiserver.example.com:8080` | Web server to be proxied including protocol. Do not end in slash. Can include port **REQUIRED**
+MUNKI_ROOT | /munki | Path from web root to the repo. Include first slash. Do not end in a slash.
+SUS_ROOT | /reposado | Path from web root to Apple SUS files. Include first slash. Do not end in a slash.
+**UPSTREAM_SERVER** | `https://munkiserver.example.com:8080` | Web server to be proxied including protocol. Do not end in slash. Can include port. **REQUIRED**
 SERVER_NAME | `munkiproxy.example.com` | Set proxy web server name if needed.
-PORT | `8080` | Port to host repo on, Defaults to `8080`
+PORT | 8080 | Port to host repo on, Defaults to `8080`
 MAX_SIZE | 100g | Size of munki pkgs cache. _The overall size may get larger than this due to how nginx functions_
 EXPIRE_PKGS | 30d | Amount of time we keep the munki **pkgs** directory cached for
 EXPIRE_ICONS | 14d | Amount of time we keep the munki **icons** directory cached for
 EXPIRE_SUS | 14d | Amount of time we keep the apple sus **downloads** directory cached for
 EXPIRE_OTHER | 10m | Amount of time we keep everything else cached for _(catalogs etc)_
-AVAHI_HOST | `munki-proxy` | mDNS hostname for proxy host.  Empty by default (mDNS disabled)
-AVAHI_DOMAIN | `local` | mDNS domain. Defaults to `local`.
+AVAHI_HOST | munki-proxy | mDNS hostname for proxy host.  Empty by default (mDNS disabled)
+AVAHI_DOMAIN | local | mDNS domain. Defaults to `local`.
 GRUNTWORK | `bXVua2k6bXVua2k=` | Encoded basic auth header for upstream repo
 
 > Valid time measurements can be found [here](http://nginx.org/en/docs/syntax.html)
