@@ -20,6 +20,12 @@ http {
 
   keepalive_timeout 180;
 
+  # log format definition
+  log_format rt_cache '\$remote_addr - \$upstream_cache_status [\$time_local]  '
+                      '"\$request" \$status \$body_bytes_sent '
+                      '"\$http_referer" "\$http_user_agent"';
+  access_log          /var/log/nginx/access.log rt_cache;
+
   # open file caching
   open_file_cache            max=2000 inactive=5m;
   open_file_cache_valid      5m;
@@ -41,14 +47,14 @@ http {
   gzip on;
 
   # caching
-  proxy_cache_path        /cache/pkgs keys_zone=MUNKI_PKGS:5m levels=1:2 max_size=200g inactive=30d;
-  proxy_cache_path        /cache/icons keys_zone=MUNKI_ICONS:5m levels=1:2 inactive=14d;
-  proxy_cache_path        /cache/apple keys_zone=APPLE_SUS:5m levels=1:2 inactive=10m;
-  proxy_cache_path        /cache/other keys_zone=MUNKI_DEFAULT:5m levels=1:2 inactive=10m;
+  proxy_cache_path        /cache/pkgs keys_zone=MUNKI_PKGS:5m levels=1:2 max_size=${MAX_SIZE} inactive=${EXPIRE_PKGS};
+  proxy_cache_path        /cache/icons keys_zone=MUNKI_ICONS:5m levels=1:2 inactive=${EXPIRE_ICONS};
+  proxy_cache_path        /cache/apple keys_zone=APPLE_SUS:5m levels=1:2 inactive=${EXPIRE_SUS};
+  proxy_cache_path        /cache/other keys_zone=MUNKI_DEFAULT:5m levels=1:2 inactive=${EXPIRE_OTHER};
   proxy_temp_path         /tmp_cache;
   proxy_cache_use_stale   error timeout invalid_header updating http_500 http_502 http_503 http_504;
 
-  proxy_cache_valid       200 302 404   10m;
+  proxy_cache_valid       200 302 404   ${EXPIRE_OTHER};
   proxy_cache_revalidate  on;
   proxy_cache_lock        on;
 
@@ -75,6 +81,16 @@ if [[ ${SERVER_NAME} ]]; then
   echo "    server_name  ${SERVER_NAME};" >> ${nginxConfig}
 fi
 
+# continue
+cat <<EOF >> ${nginxConfig}
+
+    proxy_cache    MUNKI_DEFAULT;
+
+    location = / {
+      return 204;
+    }
+EOF
+
 # gruntwork staging server detection
 if [[ ${GRUNTWORK} ]]; then
   echo "managed_installs" > /usr/share/nginx/html/gruntwork-only
@@ -89,8 +105,6 @@ fi
 # continue
 cat <<EOF >> ${nginxConfig}
 
-    proxy_cache    MUNKI_DEFAULT;
-
     location ${MUNKI_ROOT}/catalogs/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/catalogs/;
     }
@@ -98,7 +112,7 @@ cat <<EOF >> ${nginxConfig}
     location ${MUNKI_ROOT}/icons/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/icons/;
       proxy_cache         MUNKI_ICONS;
-      proxy_cache_valid   200 302   14d;
+      proxy_cache_valid   200 302   ${EXPIRE_ICONS};
     }
 
     location ${MUNKI_ROOT}/manifests/ {
@@ -108,18 +122,17 @@ cat <<EOF >> ${nginxConfig}
     location ${MUNKI_ROOT}/pkgs/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/pkgs/;
       proxy_cache         MUNKI_PKGS;
-      proxy_cache_valid   200 302   30d;
+      proxy_cache_valid   200 302   ${EXPIRE_PKGS};
     }
 
-    # Apple SUS
     location /content/catalogs/ {
-      proxy_pass          ${UPSTREAM_SERVER}/content/catalogs/;
+      proxy_pass          ${UPSTREAM_SERVER}${SUS_ROOT}/content/catalogs/;
     }
 
     location /content/downloads/ {
-      proxy_pass          ${UPSTREAM_SERVER}/content/downloads/;
+      proxy_pass          ${UPSTREAM_SERVER}${SUS_ROOT}/content/downloads/;
       proxy_cache         APPLE_SUS;
-      proxy_cache_valid   200 302   14d;
+      proxy_cache_valid   200 302   ${EXPIRE_SUS};
     }
   }
 }
@@ -153,4 +166,4 @@ fi
 nginx -g 'daemon off;'
 
 # if we get this far nginx failed - lets output the config
-cat /etc/nginx/nginx.conf
+cat -n /etc/nginx/nginx.conf
