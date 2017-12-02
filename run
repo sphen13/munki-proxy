@@ -189,7 +189,8 @@ EOF
   sed -i -e "s/^#domain-name=.*/domain-name=${AVAHI_DOMAIN}/" /etc/avahi/avahi-daemon.conf
 
   # start avahi
-  avahi-daemon --no-drop-root &
+  echo "Starting mDNS service"
+  avahi-daemon -D --no-drop-root
 fi
 
 # run nginx
