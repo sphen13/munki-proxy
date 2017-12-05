@@ -128,7 +128,20 @@ cat <<EOF >> ${nginxConfig}
     location ${MUNKI_ROOT}/pkgs/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/pkgs/;
       proxy_cache         MUNKI_PKGS;
-      proxy_cache_valid   200 302   ${EXPIRE_PKGS};
+      proxy_cache_valid   200 206 302   ${EXPIRE_PKGS};
+
+      slice               2m;
+      proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
+      proxy_set_header    Range \$slice_range;
+EOF
+
+# gruntwork staging server authorization - required in this location - the Range header seems to trample...
+if [[ ${GRUNTWORK} ]]; then
+  echo "      proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+cat <<EOF >> ${nginxConfig}
+      proxy_http_version  1.1;
     }
 
     location ${SUS_ROOT}/ {
@@ -162,7 +175,20 @@ cat <<EOF >> ${nginxConfig}
     location ${SUS_ROOT}/content/downloads/ {
       proxy_pass          ${UPSTREAM_SERVER}${SUS_ROOT}/content/downloads/;
       proxy_cache         APPLE_SUS;
-      proxy_cache_valid   200 302   ${EXPIRE_SUS};
+      proxy_cache_valid   200 206 302   ${EXPIRE_SUS};
+
+      slice               2m;
+      proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
+      proxy_set_header    Range \$slice_range;
+EOF
+
+# gruntwork staging server authorization - required in this location - the Range header seems to trample...
+if [[ ${GRUNTWORK} ]]; then
+  echo "      proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+cat <<EOF >> ${nginxConfig}
+      proxy_http_version  1.1;
     }
   }
 }
