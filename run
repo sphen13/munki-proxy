@@ -47,11 +47,10 @@ http {
   gzip on;
 
   # caching
-  proxy_cache_path        /cache/pkgs keys_zone=MUNKI_PKGS:5m levels=1:2 max_size=${MAX_SIZE} inactive=${EXPIRE_PKGS};
-  proxy_cache_path        /cache/icons keys_zone=MUNKI_ICONS:5m levels=1:2 inactive=${EXPIRE_ICONS};
-  proxy_cache_path        /cache/apple keys_zone=APPLE_SUS:5m levels=1:2 inactive=${EXPIRE_SUS};
-  proxy_cache_path        /cache/other keys_zone=MUNKI_DEFAULT:5m levels=1:2 inactive=${EXPIRE_OTHER};
-  proxy_temp_path         /tmp_cache;
+  proxy_cache_path        /cache/pkgs keys_zone=MUNKI_PKGS:5m levels=1:2 use_temp_path=off max_size=${MAX_SIZE} inactive=${EXPIRE_PKGS};
+  proxy_cache_path        /cache/icons keys_zone=MUNKI_ICONS:5m levels=1:2 use_temp_path=off inactive=${EXPIRE_ICONS};
+  proxy_cache_path        /cache/apple keys_zone=APPLE_SUS:5m levels=1:2 use_temp_path=off inactive=${EXPIRE_SUS};
+  proxy_cache_path        /cache/other keys_zone=MUNKI_DEFAULT:5m levels=1:2 use_temp_path=off inactive=${EXPIRE_OTHER};
   proxy_cache_use_stale   error timeout invalid_header updating http_500 http_502 http_503 http_504;
 
   proxy_cache_valid       200 302 404   ${EXPIRE_OTHER};
