@@ -107,7 +107,7 @@ EOF
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
-  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+  echo "      proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
 fi
 
 # continue
@@ -127,7 +127,7 @@ EOF
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
-  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+  echo "      proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
 fi
 
 # continue
@@ -147,7 +147,7 @@ EOF
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
-  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+  echo "      proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
 fi
 
 # continue
@@ -165,7 +165,7 @@ EOF
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
-  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+  echo "      proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
 fi
 
 # continue
@@ -188,7 +188,7 @@ EOF
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
-  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+  echo "      proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
 fi
 
 # continue
