@@ -62,15 +62,6 @@ http {
   proxy_set_header        X-Real-IP \$remote_addr;
   proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for;
   proxy_set_header        X-Forwarded-Host \$server_name;
-EOF
-
-# gruntwork staging server authorization
-if [[ ${GRUNTWORK} ]]; then
-  echo "  proxy_set_header        Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
-fi
-
-# continue
-cat <<EOF >> ${nginxConfig}
 
   server {
     listen ${PORT};
@@ -107,28 +98,98 @@ cat <<EOF >> ${nginxConfig}
 
     location ${MUNKI_ROOT}/catalogs/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/catalogs/;
+
+      proxy_set_header    Host \$host;
+      proxy_set_header    X-Real-IP \$remote_addr;
+      proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header    X-Forwarded-Host \$server_name;
+EOF
+
+# gruntwork staging server authorization
+if [[ ${GRUNTWORK} ]]; then
+  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
     }
 
     location ${MUNKI_ROOT}/icons/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/icons/;
       proxy_cache         MUNKI_ICONS;
       proxy_cache_valid   200 302   ${EXPIRE_ICONS};
+
+      proxy_set_header    Host \$host;
+      proxy_set_header    X-Real-IP \$remote_addr;
+      proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header    X-Forwarded-Host \$server_name;
+EOF
+
+# gruntwork staging server authorization
+if [[ ${GRUNTWORK} ]]; then
+  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
     }
 
     location ${MUNKI_ROOT}/client_resources/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/client_resources/;
       proxy_cache         MUNKI_ICONS;
       proxy_cache_valid   200 302   ${EXPIRE_ICONS};
+
+      proxy_set_header    Host \$host;
+      proxy_set_header    X-Real-IP \$remote_addr;
+      proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header    X-Forwarded-Host \$server_name;
+EOF
+
+# gruntwork staging server authorization
+if [[ ${GRUNTWORK} ]]; then
+  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
     }
 
     location ${MUNKI_ROOT}/manifests/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/manifests/;
+
+      proxy_set_header    Host \$host;
+      proxy_set_header    X-Real-IP \$remote_addr;
+      proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header    X-Forwarded-Host \$server_name;
+EOF
+
+# gruntwork staging server authorization
+if [[ ${GRUNTWORK} ]]; then
+  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
     }
 
     location ${MUNKI_ROOT}/pkgs/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/pkgs/;
       proxy_cache         MUNKI_PKGS;
       proxy_cache_valid   200 302   ${EXPIRE_PKGS};
+
+      proxy_set_header    Host \$host;
+      proxy_set_header    X-Real-IP \$remote_addr;
+      proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header    X-Forwarded-Host \$server_name;
+EOF
+
+# gruntwork staging server authorization
+if [[ ${GRUNTWORK} ]]; then
+  echo "  proxy_set_header    Authorization \"Basic ${GRUNTWORK}\";" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
     }
 
     location ${SUS_ROOT}/ {
