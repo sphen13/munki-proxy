@@ -57,11 +57,6 @@ http {
   proxy_cache_revalidate  on;
   proxy_cache_lock        on;
 
-  proxy_set_header        Host \$host;
-  proxy_set_header        X-Real-IP \$remote_addr;
-  proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for;
-  proxy_set_header        X-Forwarded-Host \$server_name;
-
   server {
     listen ${PORT};
 EOF
@@ -69,10 +64,16 @@ EOF
 # server_name if provided
 if [[ ${SERVER_NAME} ]]; then
   echo "    server_name  ${SERVER_NAME};" >> ${nginxConfig}
+  echo "    proxy_set_header  Host \$server_name;" >> ${nginxConfig}
+else
+  echo "    proxy_set_header  Host \$host;" >> ${nginxConfig}
 fi
 
 # continue
 cat <<EOF >> ${nginxConfig}
+    proxy_set_header  X-Real-IP \$remote_addr;
+    proxy_set_header  X-Forwarded-For \$proxy_add_x_forwarded_for;
+    proxy_set_header  X-Forwarded-Host \$server_name;
 
     proxy_cache    MUNKI_DEFAULT;
 
@@ -98,11 +99,17 @@ cat <<EOF >> ${nginxConfig}
     location ${MUNKI_ROOT}/catalogs/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/catalogs/;
 
-      proxy_set_header    Host \$host;
       proxy_set_header    X-Real-IP \$remote_addr;
       proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
       proxy_set_header    X-Forwarded-Host \$server_name;
 EOF
+
+# server_name if provided
+if [[ ${SERVER_NAME} ]]; then
+  echo "      proxy_set_header    Host \$server_name;" >> ${nginxConfig}
+else
+  echo "      proxy_set_header    Host \$host;" >> ${nginxConfig}
+fi
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
@@ -118,11 +125,17 @@ cat <<EOF >> ${nginxConfig}
       proxy_cache         MUNKI_ICONS;
       proxy_cache_valid   200 302   ${EXPIRE_ICONS};
 
-      proxy_set_header    Host \$host;
       proxy_set_header    X-Real-IP \$remote_addr;
       proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
       proxy_set_header    X-Forwarded-Host \$server_name;
 EOF
+
+# server_name if provided
+if [[ ${SERVER_NAME} ]]; then
+  echo "      proxy_set_header    Host \$server_name;" >> ${nginxConfig}
+else
+  echo "      proxy_set_header    Host \$host;" >> ${nginxConfig}
+fi
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
@@ -138,11 +151,17 @@ cat <<EOF >> ${nginxConfig}
       proxy_cache         MUNKI_ICONS;
       proxy_cache_valid   200 302   ${EXPIRE_ICONS};
 
-      proxy_set_header    Host \$host;
       proxy_set_header    X-Real-IP \$remote_addr;
       proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
       proxy_set_header    X-Forwarded-Host \$server_name;
 EOF
+
+# server_name if provided
+if [[ ${SERVER_NAME} ]]; then
+  echo "      proxy_set_header    Host \$server_name;" >> ${nginxConfig}
+else
+  echo "      proxy_set_header    Host \$host;" >> ${nginxConfig}
+fi
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
@@ -156,11 +175,17 @@ cat <<EOF >> ${nginxConfig}
     location ${MUNKI_ROOT}/manifests/ {
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/manifests/;
 
-      proxy_set_header    Host \$host;
       proxy_set_header    X-Real-IP \$remote_addr;
       proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
       proxy_set_header    X-Forwarded-Host \$server_name;
 EOF
+
+# server_name if provided
+if [[ ${SERVER_NAME} ]]; then
+  echo "      proxy_set_header    Host \$server_name;" >> ${nginxConfig}
+else
+  echo "      proxy_set_header    Host \$host;" >> ${nginxConfig}
+fi
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
@@ -179,11 +204,17 @@ cat <<EOF >> ${nginxConfig}
       proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
 
       proxy_set_header    Range \$slice_range;
-      proxy_set_header    Host \$host;
       proxy_set_header    X-Real-IP \$remote_addr;
       proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
       proxy_set_header    X-Forwarded-Host \$server_name;
 EOF
+
+# server_name if provided
+if [[ ${SERVER_NAME} ]]; then
+  echo "      proxy_set_header    Host \$server_name;" >> ${nginxConfig}
+else
+  echo "      proxy_set_header    Host \$host;" >> ${nginxConfig}
+fi
 
 # gruntwork staging server authorization
 if [[ ${GRUNTWORK} ]]; then
@@ -230,11 +261,21 @@ cat <<EOF >> ${nginxConfig}
       slice               2m;
       proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
       proxy_set_header    Range \$slice_range;
-      proxy_set_header    Host \$host;
       proxy_set_header    X-Real-IP \$remote_addr;
       proxy_set_header    X-Forwarded-For \$proxy_add_x_forwarded_for;
       proxy_set_header    X-Forwarded-Host \$server_name;
       proxy_http_version  1.1;
+EOF
+
+# server_name if provided
+if [[ ${SERVER_NAME} ]]; then
+  echo "      proxy_set_header    Host \$server_name;" >> ${nginxConfig}
+else
+  echo "      proxy_set_header    Host \$host;" >> ${nginxConfig}
+fi
+
+# continue
+cat <<EOF >> ${nginxConfig}
     }
   }
 }
