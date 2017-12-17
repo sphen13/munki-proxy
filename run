@@ -57,9 +57,10 @@ http {
   proxy_cache_path        /cache/other keys_zone=MUNKI_DEFAULT:5m levels=1:2 use_temp_path=off inactive=${EXPIRE_OTHER};
   proxy_cache_use_stale   error timeout invalid_header updating http_500 http_502 http_503 http_504;
 
-  proxy_cache_valid       200 302 404   ${EXPIRE_OTHER};
-  proxy_cache_revalidate  on;
-  proxy_cache_lock        on;
+  proxy_cache_valid         200 302 404   ${EXPIRE_OTHER};
+  proxy_cache_revalidate    on;
+  proxy_cache_lock          on;
+  proxy_cache_lock_timeout  5m;
 
   proxy_set_header        Host \$host;
   proxy_set_header        X-Real-IP \$remote_addr;
@@ -179,7 +180,7 @@ cat <<EOF >> ${nginxConfig}
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/pkgs/;
       proxy_cache         MUNKI_PKGS;
       proxy_cache_valid   200 206 302   ${EXPIRE_PKGS};
-      slice               2m;
+      slice               16m;
       proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
 
       proxy_set_header    Range \$slice_range;
@@ -231,7 +232,7 @@ cat <<EOF >> ${nginxConfig}
       proxy_cache         APPLE_SUS;
       proxy_cache_valid   200 206 302   ${EXPIRE_SUS};
 
-      slice               2m;
+      slice               16m;
       proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
       proxy_set_header    Range \$slice_range;
       proxy_set_header    Host \$host;
