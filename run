@@ -4,21 +4,23 @@ nginxConfig="/etc/nginx/nginx.conf"
 
 # build nginx config
 cat <<EOF > ${nginxConfig}
-worker_processes 6;
+worker_processes 1;
 
 events {
-  worker_connections 768;
+  worker_connections 1024;
+  use epoll;
+	multi_accept on;
 }
 
 http {
   # optimize for large files
-  sendfile off;
+  sendfile on;
   directio 512;
   aio on;
   tcp_nopush on;
   tcp_nodelay on;
 
-  keepalive_timeout 180;
+  keepalive_timeout 90;
 
   # log format definition
   log_format rt_cache '\$remote_addr - \$upstream_cache_status [\$time_local]  '
@@ -45,6 +47,8 @@ http {
 
   # Gzip Settings
   gzip on;
+  gzip_min_length 1000;
+  gzip_types text/html application/x-javascript text/css application/javascript text/javascript text/plain text/xml;
 
   # caching
   proxy_cache_path        /cache/pkgs keys_zone=MUNKI_PKGS:5m levels=1:2 use_temp_path=off max_size=${MAX_SIZE} inactive=${EXPIRE_PKGS};
