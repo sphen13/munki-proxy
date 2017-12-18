@@ -4,21 +4,23 @@ nginxConfig="/etc/nginx/nginx.conf"
 
 # build nginx config
 cat <<EOF > ${nginxConfig}
-worker_processes 6;
+worker_processes 1;
 
 events {
-  worker_connections 768;
+  worker_connections 1024;
+  use epoll;
+	multi_accept on;
 }
 
 http {
   # optimize for large files
-  sendfile off;
+  sendfile on;
   directio 512;
   aio on;
   tcp_nopush on;
   tcp_nodelay on;
 
-  keepalive_timeout 180;
+  keepalive_timeout 90;
 
   # log format definition
   log_format rt_cache '\$remote_addr - \$upstream_cache_status [\$time_local]  '
@@ -45,6 +47,8 @@ http {
 
   # Gzip Settings
   gzip on;
+  gzip_min_length 1000;
+  gzip_types text/html application/x-javascript text/css application/javascript text/javascript text/plain text/xml;
 
   # caching
   proxy_cache_path        /cache/pkgs keys_zone=MUNKI_PKGS:5m levels=1:2 use_temp_path=off max_size=${MAX_SIZE} inactive=${EXPIRE_PKGS};
@@ -53,9 +57,10 @@ http {
   proxy_cache_path        /cache/other keys_zone=MUNKI_DEFAULT:5m levels=1:2 use_temp_path=off inactive=${EXPIRE_OTHER};
   proxy_cache_use_stale   error timeout invalid_header updating http_500 http_502 http_503 http_504;
 
-  proxy_cache_valid       200 302 404   ${EXPIRE_OTHER};
-  proxy_cache_revalidate  on;
-  proxy_cache_lock        on;
+  proxy_cache_valid         200 302 404   ${EXPIRE_OTHER};
+  proxy_cache_revalidate    on;
+  proxy_cache_lock          on;
+  proxy_cache_lock_timeout  5m;
 
   server {
     listen ${PORT};
@@ -201,7 +206,7 @@ cat <<EOF >> ${nginxConfig}
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/pkgs/;
       proxy_cache         MUNKI_PKGS;
       proxy_cache_valid   200 206 302   ${EXPIRE_PKGS};
-      slice               2m;
+      slice               16m;
       proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
 
       proxy_set_header    Range \$slice_range;
@@ -259,7 +264,7 @@ cat <<EOF >> ${nginxConfig}
       proxy_cache         APPLE_SUS;
       proxy_cache_valid   200 206 302   ${EXPIRE_SUS};
 
-      slice               2m;
+      slice               16m;
       proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
       proxy_set_header    Range \$slice_range;
       proxy_set_header    X-Real-IP \$remote_addr;
