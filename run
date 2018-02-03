@@ -48,7 +48,7 @@ http {
   # Gzip Settings
   gzip on;
   gzip_min_length 1000;
-  gzip_types text/html application/x-javascript text/css application/javascript text/javascript text/plain text/xml;
+  gzip_types application/x-javascript text/css application/javascript text/javascript text/plain text/xml;
 
   # caching
   proxy_cache_path        /cache/pkgs keys_zone=MUNKI_PKGS:5m levels=1:2 use_temp_path=off max_size=${MAX_SIZE} inactive=${EXPIRE_PKGS};
