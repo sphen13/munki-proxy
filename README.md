@@ -8,7 +8,7 @@ If you define the `AVAHI_HOST` environment variable the container will advertise
 
 Variable | Default | Example | Description
 --- | --- | --- | ---
-MUNKI_ROOT | | /munki | Path from web root to the repo. Include first slash. Do not end in a slash.
+MUNKI_ROOT | | /munki | Path to the root of the munki repo. Include first slash. Do not end in a slash.
 SUS_ROOT |  | /reposado | Path from web root to Apple SUS files. Include first slash. Do not end in a slash.
 **UPSTREAM_SERVER** |  | `https://munkiserver.example.com:8080` | Web server to be proxied including protocol. Do not end in slash. Can include port. **REQUIRED**
 SERVER_NAME | | `munkiproxy.example.com` | Set proxy web server name if needed.
@@ -31,6 +31,8 @@ Path | Description
 `/cache` | Local proxy cache
 
 ## Usage
+
+The only thing that will change between using your primary munki repo URL and your proxy URL is the server protocol, name and port.  For example, if your real munki repo URL is `https://munkiserver.example.com/repo_root` your resulting proxy repo URL would be something like `http://munkiproxy.example.com:8080/repo_root`
 
 Example usage without mDNS:
 > Note you will need to map the port correctly if you change from the default 8080
