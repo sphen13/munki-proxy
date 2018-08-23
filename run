@@ -62,6 +62,8 @@ http {
   proxy_cache_lock          on;
   proxy_cache_lock_timeout  5m;
 
+  proxy_ignore_headers      Cache-Control;
+
   server {
     listen ${PORT};
 EOF
