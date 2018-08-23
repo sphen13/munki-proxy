@@ -21,6 +21,6 @@ COPY run /usr/local/bin/run
 
 RUN chmod +x /usr/local/bin/run
 
-VOLUME ["/cache"]
+VOLUME ["/cache","/etc/ssl"]
 
 CMD ["/usr/local/bin/run"]

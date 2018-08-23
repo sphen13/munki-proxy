@@ -66,6 +66,17 @@ http {
     listen ${PORT};
 EOF
 
+# enable SSL if asked
+if [[ ${SSL} ]]; then
+  cat <<EOF >> ${nginxConfig}
+
+    ssl                 on;
+    ssl_certificate     /etc/ssl/cert.pem;
+    ssl_certificate_key /etc/ssl/cert.key;
+
+EOF
+fi
+
 # server_name if provided
 if [[ ${SERVER_NAME} ]]; then
   echo "    server_name       ${SERVER_NAME};" >> ${nginxConfig}

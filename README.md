@@ -9,9 +9,10 @@ If you define the `AVAHI_HOST` environment variable the container will advertise
 Variable | Default | Example | Description
 --- | --- | --- | ---
 MUNKI_ROOT | | /munki | Path to the root of the munki repo. Include first slash. Do not end in a slash.
-SUS_ROOT |  | /reposado | Path from web root to Apple SUS files. Include first slash. Do not end in a slash.
+SUS_ROOT |  | /reposado | Path from web root to Apple SUS files. Include first slash. Do not end in a slash. This is typically the part of the path between the server name and /content/...
 **UPSTREAM_SERVER** |  | `https://munkiserver.example.com:8080` | Web server to be proxied including protocol. Do not end in slash. Can include port. **REQUIRED**
 SERVER_NAME | | `munkiproxy.example.com` | Set proxy web server name if needed.
+SSL | | true | Set our proxy to serve using SSL (requires certs volume)
 PORT | **8080** | 80 | Port to host repo on.
 MAX_SIZE | **100g** | 50g | Size of munki pkgs cache. _The overall size may get larger than this due to how nginx functions_
 EXPIRE_PKGS | **30d** | 90d | Amount of time we keep the munki **pkgs** directory cached for
@@ -29,6 +30,7 @@ GRUNTWORK | | `bXVua2k6bXVua2k=` | Encoded basic auth header for upstream repo
 Path | Description
 --- | ---
 `/cache` | Local proxy cache
+`/etc/ssl` | ssl certs (folder must contain `cert.pem` and `cert.key`)
 
 ## Usage
 
@@ -69,7 +71,7 @@ All you need to so is specify the `GRUNTWORK` environment variable and populate 
 
 ## Logging
 
-Both access and error logs are output to stdout.  You can view by `docker logs munki-proxy` or equivalent for your setup. We have specified a custom log file type which includes the `$upstream_cache_status` as the third attribute.  This should help you see and analyze how efficient the cache is if you so desire.
+Both access and error logs are output to stdout.  You can view by `docker logs -f munki-proxy` or equivalent for your setup. We have specified a custom log file type which includes the `$upstream_cache_status` as the third attribute.  This should help you see and analyze how efficient the cache is if you so desire.
 
 Example:
 ```
