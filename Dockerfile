@@ -9,6 +9,7 @@ ENV MUNKI_ROOT="" \
     EXPIRE_SUS=14d \
     EXPIRE_OTHER=10m \
     PORT=8080 \
+    SLICE=16m \
     AVAHI_DOMAIN=local
 
 RUN apt-get update && \

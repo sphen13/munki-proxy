@@ -232,7 +232,7 @@ cat <<EOF >> ${nginxConfig}
       proxy_pass          ${UPSTREAM_SERVER}${MUNKI_ROOT}/pkgs/;
       proxy_cache         MUNKI_PKGS;
       proxy_cache_valid   200 206 302   ${EXPIRE_PKGS};
-      slice               16m;
+      slice               ${SLICE};
       proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
 
       proxy_ignore_headers  Cache-Control;
@@ -296,7 +296,7 @@ cat <<EOF >> ${nginxConfig}
       proxy_ignore_headers  Cache-Control;
       proxy_hide_header     Cache-Control;
 
-      slice               16m;
+      slice               ${SLICE};
       proxy_cache_key     \$host\$uri\$is_args\$args\$slice_range;
       proxy_set_header    Range \$slice_range;
       proxy_set_header    X-Real-IP \$remote_addr;
