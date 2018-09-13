@@ -19,6 +19,7 @@ EXPIRE_PKGS | **30d** | 90d | Amount of time we keep the munki **pkgs** director
 EXPIRE_ICONS | **14d** | 7d | Amount of time we keep the munki **icons** directory cached for
 EXPIRE_SUS | **14d** | 30d | Amount of time we keep the apple sus **downloads** directory cached for
 EXPIRE_OTHER | **10m** | 1h | Amount of time we keep everything else cached for _(catalogs etc)_
+SLICE | **16m** | 26m | Size of the cached slices. Tune for your internet connection speed.
 AVAHI_HOST | | munki-proxy | mDNS hostname for proxy host.  Empty by default **(mDNS disabled)**
 AVAHI_DOMAIN | **local** | local | mDNS domain.
 GRUNTWORK | | `bXVua2k6bXVua2k=` | Encoded basic auth header for upstream repo
