@@ -334,6 +334,9 @@ cat <<EOF >> ${nginxConfig}
       if ( \$http_user_agent ~ "Darwin/17" ){
         rewrite ^${SUS_ROOT}/index(.*)\.sucatalog$ ${SUS_ROOT}/content/catalogs/others/index-10.13-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1$1.sucatalog last;
       }
+      if ( \$http_user_agent ~ "Darwin/18" ){
+        rewrite ^${SUS_ROOT}/index(.*)\.sucatalog$ ${SUS_ROOT}/content/catalogs/others/index-10.14-10.13-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1$1.sucatalog last;
+      }
     }
 
     location ${SUS_ROOT}/content/catalogs/ {
