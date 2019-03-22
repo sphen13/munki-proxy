@@ -11,8 +11,11 @@ Variable | Default | Example | Description
 MUNKI_ROOT | | /munki | Path to the root of the munki repo. Include first slash. Do not end in a slash.
 SUS_ROOT |  | /reposado | Path from web root to Apple SUS files. Include first slash. Do not end in a slash. This is typically the part of the path between the server name and /content/...
 **UPSTREAM_SERVER** |  | `https://munkiserver.example.com:8080` | Web server to be proxied including protocol. Do not end in slash. Can include port. **REQUIRED**
+UPSTREAM_SUS_SERVER |  | `https://sus.example.com:8080` | Web server to be proxied for apple sus including protocol. Do not end in slash. Can include port.
 SERVER_NAME | | `munkiproxy.example.com` | Set proxy web server name if needed.
+SERVER_NAME_SUS | | `munkiproxy.example.com` |
 SSL | | true | Set our proxy to serve using SSL (requires certs volume)
+SSL_SUS | | true | Set our proxy to serve using SSL for sus (only if using UPSTREAM_SUS_SERVER - certs are cert_sus.pem and cert_sus.key)
 PORT | **8080** | 80 | Port to host repo on.
 MAX_SIZE | **100g** | 50g | Size of munki pkgs cache. _The overall size may get larger than this due to how nginx functions_
 EXPIRE_PKGS | **30d** | 90d | Amount of time we keep the munki **pkgs** directory cached for
